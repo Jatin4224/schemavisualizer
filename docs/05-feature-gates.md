@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2026 Web Prodigies LLC
-
-  This source code is licensed under the MIT license found in the
-  LICENSE file in the root directory of this source tree.
--->
-
 # Feature gates
 
 A feature gate decides whether the current org can use a given feature based on its plan. There are two kinds: **limits** (numeric quotas) and **flags** (booleans).

@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2026 Web Prodigies LLC
-
-  This source code is licensed under the MIT license found in the
-  LICENSE file in the root directory of this source tree.
--->
-
 # Procedures and routers
 
 Every protected tRPC procedure goes through one function: `protectedProcedure(options?)` in `src/trpc/procedures/protected.ts`. We call it the procedure builder. It handles every cross-cutting concern so your handler can be pure business logic.

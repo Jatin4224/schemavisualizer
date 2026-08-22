@@ -1,21 +1,17 @@
-/*
- * Copyright (c) 2026 Web Prodigies LLC
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 'use client'
 
 /**
  * SOURCE OF TRUTH KEYWORDS: AuthForm, AuthFormProps, GOOGLE_OAUTH_ENABLED,
- *   authClient, signInSchema, signUpSchema, GoogleGlyph
+ *   EMAIL_AUTH_ENABLED, AUTH_METHODS_AVAILABLE, SocialOnlyForm,
+ *   AuthUnavailable, requestSignUp, authClient, signInSchema, signUpSchema,
+ *   GoogleGlyph
  *
  * WHAT:  Reusable email+password+Google auth surface. `AuthForm` is a thin
  *        dispatcher that mounts a concrete RHF form per mode (sign-in or
- *        sign-up). The layout is a bare centered column (no card): centered
- *        heading, the form, a "Or continue with" Google button below the
- *        primary action, then a cross-link footer.
+ *        sign-up), or the social-only surface when EMAIL_AUTH_ENABLED is off.
+ *        The layout is a bare centered column (no card): centered heading, the
+ *        form, a "Or continue with" Google button below the primary action,
+ *        then a cross-link footer.
  * WHY:   CLAUDE.md mandates zod + react-hook-form for every input surface, so
  *        both forms resolve against the shared schemas in src/lib/types. Two
  *        concrete forms (not one generic) give exact RHF `Path<>` inference
@@ -43,7 +39,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { authClient } from '@/lib/better-auth/auth-client'
-import { AUTH_ROUTES } from '@/lib/config'
+import {
+  AUTH_METHODS_AVAILABLE,
+  AUTH_ROUTES,
+  EMAIL_AUTH_ENABLED,
+  GOOGLE_OAUTH_ENABLED,
+  REGISTRATION_OPEN,
+} from '@/lib/config'
 import { useDevEmailToast } from '@/hooks/use-dev-email-toast'
 import {
   signInSchema,
@@ -65,9 +67,6 @@ export interface AuthFormProps {
   callbackURL?: string
 }
 
-/* Mirrors auth.ts: Google is only wired when the public client ID is set. */
-const GOOGLE_OAUTH_ENABLED = Boolean(process.env['NEXT_PUBLIC_GOOGLE_CLIENT_ID'])
-
 /**
  * SOURCE OF TRUTH KEYWORDS: AuthForm
  *
@@ -75,6 +74,15 @@ const GOOGLE_OAUTH_ENABLED = Boolean(process.env['NEXT_PUBLIC_GOOGLE_CLIENT_ID']
  * WHERE: Rendered by sign-in/page.tsx and sign-up/page.tsx.
  */
 export function AuthForm({ mode, callbackURL = '/' }: AuthFormProps) {
+  /* Every method disabled — say so rather than render a panel with no way in. */
+  if (!AUTH_METHODS_AVAILABLE) return <AuthUnavailable />
+
+  /* Credential auth off: one social-only surface serves both routes, because
+   * "sign in" and "sign up" collapse into the same single button. */
+  if (!EMAIL_AUTH_ENABLED) {
+    return <SocialOnlyForm mode={mode} callbackURL={callbackURL} />
+  }
+
   return mode === 'sign-in' ? (
     <SignInForm callbackURL={callbackURL} />
   ) : (
@@ -164,7 +172,7 @@ function SignInForm({ callbackURL }: { callbackURL: string }) {
           <AuthSubmit label="Login" isSubmitting={isSubmitting} isBusy={isBusy} />
           <GoogleButton
             label="Login with Google"
-            onClick={() => google.run(callbackURL, setError)}
+            onClick={() => google.run(callbackURL, setError, false)}
             isPending={google.isPending}
             isBusy={isBusy}
           />
@@ -291,7 +299,7 @@ function SignUpForm({ callbackURL }: { callbackURL: string }) {
           <AuthSubmit label="Sign up" isSubmitting={isSubmitting} isBusy={isBusy} />
           <GoogleButton
             label="Sign up with Google"
-            onClick={() => google.run(callbackURL, setError)}
+            onClick={() => google.run(callbackURL, setError, REGISTRATION_OPEN)}
             isPending={google.isPending}
             isBusy={isBusy}
           />
@@ -301,6 +309,47 @@ function SignUpForm({ callbackURL }: { callbackURL: string }) {
         prompt="Already have an account?"
         ctaLabel="Sign in"
         ctaHref={AUTH_ROUTES.signIn}
+      />
+    </div>
+  )
+}
+
+/* ---------- Social-only (credential auth disabled) ---------- */
+
+/**
+ * SOURCE OF TRUTH KEYWORDS: SocialOnlyForm, EMAIL_AUTH_ENABLED, social only
+ *
+ * WHAT:  The auth surface when EMAIL_AUTH_ENABLED is false — heading plus a
+ *        single Google button, no credential fields and no cross-link footer.
+ * WHY:   With one method there is nothing to "continue with" and no real
+ *        difference between /sign-in and /sign-up, so the divider and the
+ *        footer swap would both be noise. Sign-up is requested (subject to
+ *        REGISTRATION_OPEN) so a first-time Google user is created rather than
+ *        rejected by the provider's disableImplicitSignUp.
+ * WHERE: Returned by AuthForm for both auth routes while the flag is off.
+ */
+function SocialOnlyForm({
+  mode,
+  callbackURL,
+}: {
+  mode: AuthFormMode
+  callbackURL: string
+}) {
+  const { error, setError, google } = useAuthEffects()
+
+  return (
+    <div className="flex flex-col gap-6">
+      <AuthHeading
+        title={mode === 'sign-up' ? 'Create an account' : 'Login to your account'}
+        description="Continue with your Google account to get started."
+      />
+      <AuthError error={error} />
+      <GoogleButton
+        label="Continue with Google"
+        onClick={() => google.run(callbackURL, setError, REGISTRATION_OPEN)}
+        isPending={google.isPending}
+        isBusy={google.isPending}
+        showDivider={false}
       />
     </div>
   )
@@ -329,6 +378,23 @@ function AuthError({ error }: { error: string | null }) {
   )
 }
 
+/**
+ * SOURCE OF TRUTH KEYWORDS: AuthUnavailable, AUTH_METHODS_AVAILABLE
+ *
+ * WHAT:  Shown when every sign-in method is turned off.
+ * WHY:   An empty panel reads as a broken page; naming the misconfiguration
+ *        tells whoever set the env flags exactly what to fix.
+ * WHERE: Returned by AuthForm when AUTH_METHODS_AVAILABLE is false.
+ */
+function AuthUnavailable() {
+  return (
+    <AuthHeading
+      title="Sign-in unavailable"
+      description="No sign-in method is currently enabled. Please contact the site administrator."
+    />
+  )
+}
+
 function AuthSubmit({
   label,
   isSubmitting,
@@ -351,18 +417,24 @@ function GoogleButton({
   onClick,
   isPending,
   isBusy,
+  /* The "Or continue with" rule only reads as a divider when a credential form
+   * sits above it; as the sole method the button stands alone. */
+  showDivider = true,
 }: {
   label: string
   onClick: () => void
   isPending: boolean
   isBusy: boolean
+  showDivider?: boolean
 }) {
   if (!GOOGLE_OAUTH_ENABLED) return null
   return (
     <>
-      <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-        <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
-      </div>
+      {showDivider ? (
+        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+          <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
+        </div>
+      ) : null}
       <Button variant="outline" type="button" className="w-full" onClick={onClick} disabled={isBusy}>
         {isPending ? <Loader2Icon className="size-4 animate-spin" /> : <GoogleGlyph />}
         {label}
@@ -395,12 +467,23 @@ function useAuthEffects() {
   const [error, setError] = React.useState<string | null>(null)
   const [isPending, setIsPending] = React.useState(false)
 
-  async function run(callbackURL: string, setErr: (v: string | null) => void) {
+  /* requestSignUp is load-bearing: the Google provider runs with
+   * disableImplicitSignUp, so an unknown account is rejected unless the caller
+   * explicitly asks for sign-up (see resolveGoogleProvider in auth.ts). */
+  async function run(
+    callbackURL: string,
+    setErr: (v: string | null) => void,
+    requestSignUp: boolean
+  ) {
     if (isPending) return
     setErr(null)
     setIsPending(true)
     try {
-      const { error: authError } = await authClient.signIn.social({ provider: 'google', callbackURL })
+      const { error: authError } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL,
+        requestSignUp,
+      })
       if (authError) setErr(authError.message ?? 'Google sign-in failed. Try again.')
     } finally {
       setIsPending(false)

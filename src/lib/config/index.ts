@@ -1,14 +1,8 @@
-/*
- * Copyright (c) 2026 Web Prodigies LLC
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 /**
  * SOURCE OF TRUTH KEYWORDS: APP_NAME, APP_URL, APP_DOMAIN,
  *   APP_DESCRIPTION, APP_METADATA_BASE, BRANDING, AUTH_ROUTES,
- *   REGISTRATION_OPEN, PLANS, PlanKey, PlanDefinition, ROUTES,
+ *   REGISTRATION_OPEN, EMAIL_AUTH_ENABLED, GOOGLE_OAUTH_ENABLED,
+ *   AUTH_METHODS_AVAILABLE, PLANS, PlanKey, PlanDefinition, ROUTES,
  *   AppRouteKey, PLAN_ORDER, BillingInterval, getPlanPriceId, getPlanByPriceId,
  *   getNextPlan, isPaidPlan, portalConfig, isPortalEnabled,
  *   isPortalOwnerEmail, PORTAL_PATH
@@ -38,6 +32,11 @@ export type { AuthRouteKey } from './auth-routes'
 export { ROUTES } from './routes'
 export type { AppRouteKey } from './routes'
 export { REGISTRATION_OPEN } from './registration'
+export {
+  EMAIL_AUTH_ENABLED,
+  GOOGLE_OAUTH_ENABLED,
+  AUTH_METHODS_AVAILABLE,
+} from './auth-methods'
 export {
   PLAN_KEYS,
   PLANS,

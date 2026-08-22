@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2026 Web Prodigies LLC
-
-  This source code is licensed under the MIT license found in the
-  LICENSE file in the root directory of this source tree.
--->
-
 # Auth and tenancy
 
 Better Auth handles identity. Its organization plugin handles tenancy. Custom roles live as rows in the database. This page covers how those pieces fit together.

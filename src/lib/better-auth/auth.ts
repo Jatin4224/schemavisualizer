@@ -1,10 +1,3 @@
-/*
- * Copyright (c) 2026 Web Prodigies LLC
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
 /**
  * SOURCE OF TRUTH KEYWORDS: auth, Session, User, getCachedSession
  *
@@ -34,6 +27,7 @@ import { prisma } from '@/lib/config/prisma'
 import { ac, roles } from '@/lib/better-auth/permissions'
 import { APP_URL, APP_NAME, APP_DOMAIN } from '@/lib/config/branding'
 import { REGISTRATION_OPEN } from '@/lib/config/registration'
+import { EMAIL_AUTH_ENABLED } from '@/lib/config/auth-methods'
 import {
   sendVerificationEmail as sendVerificationEmailService,
   sendPasswordResetEmail as sendPasswordResetEmailService,
@@ -145,7 +139,9 @@ export const auth = betterAuth({
    * attacker pre-registers victim@gmail.com and Better Auth later merges it
    * with the real victim's Google sign-in. */
   emailAndPassword: {
-    enabled: true,
+    /* Flag-gated so hiding the credential UI also closes this route — a
+     * hidden form must never stay reachable by posting straight at the API. */
+    enabled: EMAIL_AUTH_ENABLED,
     requireEmailVerification: true,
     async sendResetPassword({ user, url }: { user: { email: string }; url: string }) {
       /* Dev convenience: log the link too so local flows work without Resend

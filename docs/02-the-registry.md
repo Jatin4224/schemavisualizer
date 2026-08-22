@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2026 Web Prodigies LLC
-
-  This source code is licensed under the MIT license found in the
-  LICENSE file in the root directory of this source tree.
--->
-
 # The registry
 
 `src/lib/resources.ts` is the one place every feature in your app gets declared. Permissions, plan limits, plan flags, sidebar items, audit templates, rate-limit overrides — all of it lives here.

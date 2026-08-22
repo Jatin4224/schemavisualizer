@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2026 Web Prodigies LLC
-
-  This source code is licensed under the MIT license found in the
-  LICENSE file in the root directory of this source tree.
--->
-
 # Adding a feature
 
 This walks through adding a `documents` feature end-to-end. CRUD entity, plan limit, sidebar nav, audit templates, a custom `publish` verb, and a per-action rate limit. After the main walkthrough, three smaller variations follow.

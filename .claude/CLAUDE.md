@@ -1,10 +1,3 @@
-<!--
-  Copyright (c) 2026 Web Prodigies LLC
-
-  This source code is licensed under the MIT license found in the
-  LICENSE file in the root directory of this source tree.
--->
-
 # You have to follow these rules when you build this app. Every single rule must be followed.
 
 - You are building this app with a pattern recognition model. That means that anything you write is based on previous patterns and coding practices already used in the app. Never create your own architecture, use your own libraries, or create new patterns without confirming similar patterns don't already exist in the app.
