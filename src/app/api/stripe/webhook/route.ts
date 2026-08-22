@@ -21,13 +21,12 @@
 import { NextResponse } from 'next/server'
 import type Stripe from 'stripe'
 
+import { getPlanByPriceId, PLAN_ORDER } from '@/lib/config'
 import {
   getStripeClient,
   getStripeWebhookSecret,
   isStripeConfigured,
-  getPlanByPriceId,
-  PLAN_ORDER,
-} from '@/lib/config'
+} from '@/lib/config/stripe'
 import type { PlanKey } from '@/lib/config/plans'
 import {
   upsertSubscription,

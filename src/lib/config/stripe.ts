@@ -19,6 +19,8 @@
  *        route. Client-side keys live in src/lib/stripe/*.
  */
 
+import 'server-only'
+
 import Stripe from 'stripe'
 
 /* Pinned to the installed SDK's latest API version. In this version the

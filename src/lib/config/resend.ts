@@ -18,6 +18,8 @@
  *        src/lib/config/index.ts.
  */
 
+import 'server-only'
+
 import { Resend } from 'resend'
 import { APP_NAME } from '@/lib/config/branding'
 

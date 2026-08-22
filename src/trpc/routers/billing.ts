@@ -32,12 +32,8 @@ import {
   upgradeSubscriptionSchema,
   paymentMethodIdSchema,
 } from '@/lib/types'
-import {
-  getStripeClient,
-  isStripeConfigured,
-  getPlanPriceId,
-  PLANS,
-} from '@/lib/config'
+import { getPlanPriceId, PLANS } from '@/lib/config'
+import { getStripeClient, isStripeConfigured } from '@/lib/config/stripe'
 import { getOrganizationTier } from '@/lib/feature-gate'
 import {
   ensureStripeCustomer,

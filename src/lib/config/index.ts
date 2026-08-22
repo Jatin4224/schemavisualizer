@@ -6,25 +6,25 @@
  */
 
 /**
- * SOURCE OF TRUTH KEYWORDS: prisma, DbClient, APP_NAME, APP_URL, APP_DOMAIN,
+ * SOURCE OF TRUTH KEYWORDS: APP_NAME, APP_URL, APP_DOMAIN,
  *   APP_DESCRIPTION, APP_METADATA_BASE, BRANDING, AUTH_ROUTES,
- *   REGISTRATION_OPEN, PLANS, PlanKey, PlanDefinition, resend,
- *   getResendClient, RESEND_DEFAULT_FROM, isResendConfigured, ROUTES,
+ *   REGISTRATION_OPEN, PLANS, PlanKey, PlanDefinition, ROUTES,
  *   AppRouteKey, PLAN_ORDER, BillingInterval, getPlanPriceId, getPlanByPriceId,
- *   getNextPlan, isPaidPlan, getStripeClient, isStripeConfigured,
- *   getStripeWebhookSecret, STRIPE_API_VERSION, portalConfig, isPortalEnabled,
+ *   getNextPlan, isPaidPlan, portalConfig, isPortalEnabled,
  *   isPortalOwnerEmail, PORTAL_PATH
  *
- * WHAT:  Barrel re-export for the `src/lib/config/*` modules.
+ * WHAT:  Barrel re-export for the CLIENT-SAFE `src/lib/config/*` modules only.
  * WHY:   Single import surface (`@/lib/config`) so consumers don't depend on
- *        the per-concern split, and so the prisma singleton, branding,
- *        auth-routes, plans, and registration flag can be regrouped without
- *        ripple edits.
- * WHERE: Imported broadly across the app and by src/lib/better-auth/auth.ts.
+ *        the per-concern split. Server-only config (prisma, stripe, resend)
+ *        is deliberately NOT re-exported here: this barrel is imported by
+ *        client components, and re-exporting them pulled PrismaClient, the
+ *        Stripe SDK and the Resend SDK into the browser bundle (module-not-found
+ *        on `./runtime/library.js` plus leaked server code). Import those from
+ *        their own module — `@/lib/config/prisma`, `@/lib/config/stripe`,
+ *        `@/lib/config/resend` — which is already the dominant call site shape.
+ * WHERE: Imported broadly across the app, including client components.
  */
 
-export { prisma } from './prisma'
-export type { DbClient } from './prisma'
 export {
   APP_NAME,
   APP_URL,
@@ -48,17 +48,6 @@ export {
   getNextPlan,
 } from './plans'
 export type { PlanKey, PlanDefinition, BillingInterval } from './plans'
-export {
-  getResendClient,
-  RESEND_DEFAULT_FROM,
-  isResendConfigured,
-} from './resend'
-export {
-  getStripeClient,
-  isStripeConfigured,
-  getStripeWebhookSecret,
-  STRIPE_API_VERSION,
-} from './stripe'
 export {
   portalConfig,
   isPortalEnabled,

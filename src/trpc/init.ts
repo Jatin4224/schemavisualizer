@@ -23,7 +23,7 @@
 import { cache } from 'react'
 import { headers } from 'next/headers'
 import { TRPCError } from '@trpc/server'
-import { prisma } from '@/lib/config'
+import { prisma } from '@/lib/config/prisma'
 import { getCachedSession } from '@/lib/better-auth/auth'
 import type { Session, User } from '@/lib/better-auth/auth'
 import type { StructuredErrorCause } from '@/lib/errors'
