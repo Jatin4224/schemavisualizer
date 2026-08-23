@@ -45,6 +45,7 @@ import {
   EMAIL_AUTH_ENABLED,
   GOOGLE_OAUTH_ENABLED,
   REGISTRATION_OPEN,
+  ROUTES,
 } from '@/lib/config'
 import { useDevEmailToast } from '@/hooks/use-dev-email-toast'
 import {
@@ -58,8 +59,11 @@ import {
 /**
  * SOURCE OF TRUTH KEYWORDS: AuthFormProps
  *
- * WHAT:  Props for AuthForm — mode + optional post-success callback URL
- *        (defaults to "/").
+ * WHAT:  Props for AuthForm — mode + optional post-auth landing URL (defaults
+ *        to ROUTES.dashboard).
+ * WHY:   The dashboard layout is the single auth+onboarding gate — landing on
+ *        "/" after Google OAuth would bounce the user back to the public
+ *        "Get Started" page instead of into the app.
  * WHERE: Used by the (auth) route pages.
  */
 export interface AuthFormProps {
@@ -73,7 +77,7 @@ export interface AuthFormProps {
  * WHAT:  Selects the concrete form by `mode`.
  * WHERE: Rendered by sign-in/page.tsx and sign-up/page.tsx.
  */
-export function AuthForm({ mode, callbackURL = '/' }: AuthFormProps) {
+export function AuthForm({ mode, callbackURL = ROUTES.dashboard }: AuthFormProps) {
   /* Every method disabled — say so rather than render a panel with no way in. */
   if (!AUTH_METHODS_AVAILABLE) return <AuthUnavailable />
 
