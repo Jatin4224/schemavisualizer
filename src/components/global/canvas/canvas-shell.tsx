@@ -54,8 +54,9 @@ export interface CanvasShellProps<N extends Node, E extends Edge> {
   /** Rendered as a floating panel top-right (legends, keys, counts…). */
   legend?: React.ReactNode
   /**
-   * Centered layer above the canvas for empty states and coach marks. Give it
-   * `pointer-events-none` unless it is meant to swallow canvas drags.
+   * Centered layer above the canvas for empty states and coach marks. Its
+   * wrapper is click-through, so the toolbar and pan/zoom keep working
+   * underneath — opt an interactive child back in with `pointer-events-auto`.
    */
   overlay?: React.ReactNode
   nodeTypes?: NodeTypes
@@ -155,7 +156,12 @@ function CanvasShellInner<N extends Node, E extends Edge>({
       style={XYFLOW_THEME_VARS as React.CSSProperties}
     >
       {loading ? (
-        <div className="absolute inset-0 z-10 animate-pulse bg-background/50" aria-hidden />
+        /* A dimmer is a visual cue, not a click trap — without pointer-events-none
+         * the toolbar stays dead for the whole first fetch. */
+        <div
+          className="pointer-events-none absolute inset-0 z-10 animate-pulse bg-background/50"
+          aria-hidden
+        />
       ) : null}
       <ReactFlow<N, E>
         nodes={nodes}
@@ -193,8 +199,15 @@ function CanvasShellInner<N extends Node, E extends Edge>({
       </ReactFlow>
 
       {/* Sibling of ReactFlow rather than a Panel — Panel has no centered
-       * position, and an empty state belongs in the middle of the viewport. */}
-      {overlay ? <div className="absolute inset-0 z-10">{overlay}</div> : null}
+       * position, and an empty state belongs in the middle of the viewport.
+       * pointer-events-none is load-bearing: this wrapper spans the whole
+       * viewport ABOVE the toolbar Panel (xyflow z-index 5) and the pane, so
+       * without it an empty-state overlay silently swallows every click on the
+       * toolbar and canvas. Interactive overlay content opts back in with
+       * pointer-events-auto on itself. */}
+      {overlay ? (
+        <div className="pointer-events-none absolute inset-0 z-10">{overlay}</div>
+      ) : null}
     </div>
   )
 }
