@@ -1,36 +1,35 @@
-'use client'
-
 /**
- * SOURCE OF TRUTH KEYWORDS: RootPage
+ * SOURCE OF TRUTH KEYWORDS: RootPage, LandingSection, LandingHero,
+ *   GetStartedCta, PublicLanding
  *
- * WHAT:  Root index — fires a single auth-required tRPC query, then sends the
- *        authenticated user on to the dashboard. Renders nothing meanwhile.
- * WHY:   The query is the auth probe: anonymous → server throws UNAUTHORIZED →
- *        the AuthRedirectObserver bounces to sign-in (auth-flow stays
- *        centralized, never a per-page `redirect`). On success the user is
- *        authenticated, so we push to ROUTES.dashboard — the dashboard layout
- *        then owns the no-org → onboarding redirect. This page never decides
- *        the auth target itself; it only forwards the happy path.
- * WHERE: Auth enforcement: authProcedure (src/trpc/procedures/protected.ts);
- *        redirect handler: AuthRedirectObserver (src/trpc/react-provider.tsx);
- *        landing route: ROUTES (src/lib/config/routes.ts).
+ * WHAT:  Minimal public landing page — one section with the app heading,
+ *        description copy, and a Get Started CTA that links to sign-in.
+ * WHY:   The root route is the first thing anonymous visitors see; it stays a
+ *        static server component so there is no auth probe or client redirect
+ *        here. All copy comes from BRANDING (src/lib/config/branding.ts) and
+ *        the CTA target from AUTH_ROUTES (src/lib/config/auth-routes.ts) — no
+ *        hardcoded strings or paths.
+ * WHERE: CTA target: AUTH_ROUTES.signIn handled by AuthRedirectObserver
+ *        (src/trpc/react-provider.tsx); brand copy: BRANDING.
  */
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
-import { trpc } from '@/trpc/react-provider'
-import { ROUTES } from '@/lib/config'
+import { buttonVariants } from '@/components/ui/button'
+import { AUTH_ROUTES, BRANDING } from '@/lib/config'
 
-export default function RootPage(): null {
-  const router = useRouter()
-  /* Anonymous → UNAUTHORIZED → observer → sign-in. Authenticated → resolves
-   * (org or null) and we forward to the dashboard. */
-  const { isSuccess } = trpc.organization.getActiveOrganization.useQuery()
-
-  useEffect(() => {
-    if (isSuccess) router.replace(ROUTES.dashboard)
-  }, [isSuccess, router])
-
-  return null
+export default function RootPage() {
+  return (
+    <main className="flex min-h-svh items-center justify-center bg-background px-4">
+      <section className="flex max-w-xl flex-col items-center gap-6 text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          {BRANDING.appName}
+        </h1>
+        <p className="text-lg text-muted-foreground">{BRANDING.appDescription}</p>
+        <Link href={AUTH_ROUTES.signIn} className={buttonVariants({ size: 'lg' })}>
+          Get Started
+        </Link>
+      </section>
+    </main>
+  )
 }
