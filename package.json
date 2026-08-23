@@ -11,6 +11,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ai-sdk/google": "^4.0.50",
     "@base-ui/react": "^1.4.1",
     "@hookform/resolvers": "^5.2.2",
     "@hugeicons/core-free-icons": "^4.1.4",
@@ -29,6 +30,8 @@
     "@trpc/tanstack-react-query": "^11.17.0",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.38.0",
+    "@xyflow/react": "^12.11.3",
+    "ai": "^7.0.77",
     "better-auth": "^1.6.30",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

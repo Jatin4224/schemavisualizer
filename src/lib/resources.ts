@@ -222,6 +222,115 @@ export const RESOURCES = {
     description: 'Connect or disconnect third-party services',
     permissions: ['read', 'update'],
   },
+
+  /* ── Schema Studio ─────────────────────────────────────────────────────
+   * `diagrams` is the CRUD surface. The three entries after it exist because
+   * limits and flags are AUTO_DERIVED_FROM_RESOURCES off the FIRST segment of
+   * the procedure path — a gate cannot be declared per-procedure. So a design's
+   * entity quota and the two plan-tier flags each need their own registry key,
+   * and the routers that enforce them must be NAMED after those keys
+   * (`diagramEntities.*`, `schemaExport.*`, `diagramHistory.*`), exactly as
+   * `auditLogs` already does. Hanging `export` off `diagrams.export` instead
+   * would silently apply no flag gate at all. */
+  diagrams: {
+    name: 'Diagrams',
+    description: 'Visual data-structure designs within an organization',
+    permissions: ['create', 'read', 'update', 'delete', 'export'],
+    limit: {
+      perPlan: { free: 2, starter: 15, pro: 100, enterprise: 'unlimited', portal: 'unlimited' },
+      upgradeMessage: 'Upgrade to {nextPlan} to design more diagrams',
+      availableOnFreeTrial: true,
+      unit: 'diagrams',
+    },
+    nav: {
+      label: 'Diagrams',
+      href: '/dashboard/diagrams',
+      icon: 'Workflow',
+      section: 'main',
+    },
+    audit: {
+      describe: {
+        create: 'Created diagram {output.name}',
+        update: 'Updated diagram {output.name}',
+        delete: 'Deleted diagram {input.id}',
+        duplicate: 'Duplicated diagram into {output.name}',
+        addrelation: 'Added a relation to diagram {input.diagramId}',
+        updaterelation:
+          'Updated relation {input.relationId} on diagram {input.organizationId}',
+        deleterelation: 'Removed a relation from a design',
+      },
+    },
+    /* Autosave fires ~every 800ms per open editor — cap it so a runaway
+     * debounce loop can't hammer the DB. Key is the LOWERCASED path verb
+     * (`saveCanvas` → `savecanvas`). */
+    rateLimit: {
+      savecanvas: { count: 120, window: '1 m' },
+    },
+  },
+
+  /* Quota-only: caps how large a design can get, org-wide. No page, no verbs —
+   * the counter is driven by the `diagramEntities.create` / `.delete` path. */
+  diagramEntities: {
+    name: 'Diagram Entities',
+    description: 'Total entities across all designs in an organization',
+    limit: {
+      perPlan: { free: 15, starter: 100, pro: 1_000, enterprise: 'unlimited', portal: 'unlimited' },
+      upgradeMessage: 'Upgrade to {nextPlan} for larger designs',
+      availableOnFreeTrial: true,
+      unit: 'entities',
+    },
+  },
+
+  /* Flag-only. The rate limit is keyed by the LOWERCASED path verb, so the
+   * procedure must be `schemaExport.generate`. */
+  schemaExport: {
+    name: 'Schema Export',
+    description: 'Export a design to Prisma schema, PostgreSQL DDL, or JSON',
+    flag: {
+      perPlan: { free: false, starter: true, pro: true, enterprise: true, portal: true },
+      availableOnFreeTrial: false,
+    },
+    rateLimit: {
+      generate: { count: 20, window: '1 m' },
+    },
+  },
+
+  /* Flag-only. Named snapshots of a whole design, and restore. */
+  diagramHistory: {
+    name: 'Design History',
+    description: 'Named snapshots of a design, with restore',
+    flag: {
+      perPlan: { free: false, starter: false, pro: true, enterprise: true, portal: true },
+      availableOnFreeTrial: false,
+    },
+  },
+
+  /* AI schema chatbot. Modelled as a LIMIT (not a flag) so the whole gate
+   * stack auto-wires off the `aiSchema.create` path: plan cap checked before
+   * the model call, counter bumped after it, audit row written, and
+   * <FeatureGate resource="aiSchema"> works client-side for free. Naming the
+   * verb `create` rather than `generate` is what buys all of that — the
+   * factory keys the limit gate and the counter off the literal verb.
+   * The rate limit is a second, tighter guard on cost: the plan cap is the
+   * budget, this stops one user burning it in ten seconds. */
+  aiSchema: {
+    name: 'AI Schema Generation',
+    description: 'Generate database designs from a natural-language prompt',
+    limit: {
+      perPlan: { free: 25, starter: 250, pro: 2_500, enterprise: 'unlimited', portal: 'unlimited' },
+      upgradeMessage: 'Upgrade to {nextPlan} for more AI schema generations',
+      availableOnFreeTrial: true,
+      unit: 'generations',
+    },
+    audit: {
+      describe: {
+        create: 'Generated schema from prompt on diagram {input.diagramId}',
+      },
+    },
+    rateLimit: {
+      create: { count: 10, window: '1 m' },
+    },
+  },
 } as const satisfies Record<string, ResourceDefinition>
 
 export type ResourceKey = keyof typeof RESOURCES

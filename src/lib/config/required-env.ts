@@ -169,6 +169,18 @@ export const OPTIONAL_ENV: readonly OptionalEnvVar[] = [
       ...STRIPE_PRICE_KEYS,
     ],
   },
+  {
+    id: 'googleAi',
+    label: 'AI schema generation (Google Gemini)',
+    purpose:
+      'Optional. Without a key the Ask AI button on a diagram returns a clear “not configured” message and everything else keeps working — you can still design schemas by hand.',
+    help: 'Create a free API key in Google AI Studio and paste it below. It powers the chatbot that turns a plain-English product description into tables, columns and relationships.',
+    icon: 'Sparkles',
+    link: { label: 'Get a Gemini API key', url: 'https://aistudio.google.com/apikey' },
+    keys: [
+      { key: 'GOOGLE_GENERATIVE_AI_API_KEY', label: 'Gemini API key' },
+    ],
+  },
 ]
 
 export interface OptionalEnvKeyStatus extends OptionalEnvKey {

@@ -21,6 +21,9 @@ import { organizationSettingsRouter } from './organization-settings'
 import { portalRouter } from './portal'
 import { devRouter } from './dev'
 import { userRouter } from './user'
+import { diagramsRouter } from './diagrams'
+import { diagramEntitiesRouter } from './diagram-entities'
+import { aiSchemaRouter } from './ai-schema'
 
 /**
  * SOURCE OF TRUTH KEYWORDS: appRouter, AppRouter
@@ -43,6 +46,9 @@ export const appRouter = createTRPCRouter({
   portal: portalRouter,
   dev: devRouter,
   user: userRouter,
+  diagrams: diagramsRouter,
+  diagramEntities: diagramEntitiesRouter,
+  aiSchema: aiSchemaRouter,
 })
 
 export type AppRouter = typeof appRouter

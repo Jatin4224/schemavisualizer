@@ -18,6 +18,7 @@ import {
   ScrollText,
   Settings,
   Users,
+  Workflow,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -30,6 +31,7 @@ export const NAV_ICONS: Record<string, LucideIcon> = {
   CreditCard,
   Settings,
   LayoutDashboard,
+  Workflow,
 }
 
 export type NavIconName = keyof typeof NAV_ICONS

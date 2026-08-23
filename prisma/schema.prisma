@@ -72,6 +72,8 @@ model User {
   invitations      Invitation[]
   activityLogs     ActivityLog[]
   cardFingerprints CardFingerprint[]
+  diagrams         Diagram[]
+  diagramSnapshots DiagramSnapshot[]
 
   @@map("user")
 }
@@ -185,6 +187,7 @@ model Organization {
   subscriptions     Subscription[]
   usageMetrics      UsageMetrics[]
   activityLogs      ActivityLog[]
+  diagrams          Diagram[]
 
   @@map("organization")
 }
@@ -381,4 +384,157 @@ model ActivityLog {
   @@index([action])
   @@index([entity])
   @@map("activity_log")
+}
+
+// ============================================================================
+// SCHEMA STUDIO — Visual data-structure designs
+// ============================================================================
+//
+// A Diagram is an org-scoped design: a set of entities (cards), each holding
+// ordered fields, connected by typed relations, plus the persisted canvas
+// viewport so a design reopens exactly where the user left it.
+//
+// No enums, by design: `cardinality` and `onDelete` are String columns matching
+// how Member.role and ActivityLog.entity are already encoded. Validation lives
+// in the zod layer (src/lib/types/diagram.ts) instead, so adding a cardinality
+// never needs a migration.
+//
+// Quotas: `diagrams` and `diagramEntities` are LimitResourceKeys in
+// src/lib/resources.ts — the procedure factory counts rows against them.
+//
+// SOURCE OF TRUTH KEYWORDS: Diagram, DiagramEntity, DiagramEntityField,
+//   DiagramRelation, DiagramSnapshot
+// ============================================================================
+
+/// Diagram — one visual data-structure design, scoped to an organization.
+/// `version` is an optimistic-concurrency guard: every mutating write bumps it,
+/// and a client holding a stale version gets CONFLICT instead of silently
+/// clobbering a concurrent editor. viewportX/Y/Zoom persist the canvas camera.
+///
+/// `createdById` is nullable with onDelete: SetNull on purpose — a design
+/// belongs to the ORGANIZATION, not to the person who happened to create it, so
+/// removing a user must never delete the org's designs.
+///
+/// SOURCE OF TRUTH KEYWORD: Diagram
+model Diagram {
+  id             String   @id @default(cuid())
+  organizationId String
+  name           String
+  description    String   @default("")
+  viewportX      Float    @default(0)
+  viewportY      Float    @default(0)
+  viewportZoom   Float    @default(1)
+  version        Int      @default(1)
+  createdById    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User?             @relation(fields: [createdById], references: [id], onDelete: SetNull)
+  entities     DiagramEntity[]
+  relations    DiagramRelation[]
+  snapshots    DiagramSnapshot[]
+
+  // Names are unique per org so the picker and the exported schema can't hold
+  // two designs the user cannot tell apart.
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@index([createdById])
+  @@map("diagram")
+}
+
+/// DiagramEntity — one entity card on the canvas (a future table/model).
+/// `color` stores a THEME TOKEN KEY (e.g. "primary"), never a hex value, per the
+/// project's theming rule; the token allowlist lives in src/lib/config.
+///
+/// SOURCE OF TRUTH KEYWORD: DiagramEntity
+model DiagramEntity {
+  id        String  @id @default(cuid())
+  diagramId String
+  name      String
+  note      String  @default("")
+  color     String?
+  positionX Float   @default(0)
+  positionY Float   @default(0)
+  collapsed Boolean @default(false)
+
+  diagram Diagram              @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  fields  DiagramEntityField[]
+
+  // Entity names must be unique within a design — duplicates would export to
+  // two Prisma models with the same name.
+  @@unique([diagramId, name])
+  @@index([diagramId])
+  @@map("diagramEntity")
+}
+
+/// DiagramEntityField — one column on an entity card. `dataType` holds a key
+/// from the DATA_TYPES registry (src/lib/config/data-types.ts), which is what
+/// maps it to a Prisma type and a Postgres type at export time. `order` drives
+/// the drag-to-reorder field list.
+///
+/// SOURCE OF TRUTH KEYWORD: DiagramEntityField
+model DiagramEntityField {
+  id           String  @id @default(cuid())
+  entityId     String
+  name         String
+  dataType     String
+  isPrimary    Boolean @default(false)
+  isRequired   Boolean @default(true)
+  isUnique     Boolean @default(false)
+  defaultValue String?
+  order        Int     @default(0)
+
+  entity DiagramEntity @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@unique([entityId, name])
+  @@index([entityId])
+  @@map("diagramEntityField")
+}
+
+/// DiagramRelation — a typed edge between two entities. Field ids are optional
+/// so an edge can be drawn entity-to-entity before the FK column exists, then
+/// resolved later; the design validator surfaces the unresolved ones.
+///
+/// `cardinality` is one of ONE_TO_ONE | ONE_TO_MANY | MANY_TO_ONE | MANY_TO_MANY
+/// and `onDelete` one of cascade | restrict | setNull — both validated by zod,
+/// not by a database enum.
+///
+/// SOURCE OF TRUTH KEYWORD: DiagramRelation
+model DiagramRelation {
+  id           String @id @default(cuid())
+  diagramId    String
+  fromEntityId String
+  fromFieldId  String?
+  toEntityId   String
+  toFieldId    String?
+  cardinality  String
+  onDelete     String @default("restrict")
+  label        String @default("")
+
+  diagram Diagram @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+
+  @@index([diagramId])
+  @@map("diagramRelation")
+}
+
+/// DiagramSnapshot — a named, restorable point-in-time copy of a whole design.
+/// `payload` is the serialized graph rather than FK rows so a restore is one
+/// write and a snapshot survives edits to the live tables.
+///
+/// SOURCE OF TRUTH KEYWORD: DiagramSnapshot
+model DiagramSnapshot {
+  id          String   @id @default(cuid())
+  diagramId   String
+  label       String
+  payload     Json
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  diagram   Diagram @relation(fields: [diagramId], references: [id], onDelete: Cascade)
+  createdBy User?   @relation(fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([diagramId])
+  @@index([createdById])
+  @@map("diagramSnapshot")
 }
