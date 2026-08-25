@@ -41,9 +41,9 @@ function EntityNodeComponent({ id, data, selected }: NodeProps<EntityFlowNode>) 
   return (
     <div
       className={[
-        'group relative w-64 rounded-lg border bg-card text-card-foreground shadow-sm transition-shadow',
+        'group relative w-64 rounded-lg border bg-card text-card-foreground shadow-md transition-shadow hover:shadow-lg',
         token.strip !== 'border-border' ? `${token.strip} border-l-4` : 'border',
-        selected ? 'ring-2 ring-ring' : '',
+        selected ? 'shadow-glow ring-2 ring-ring' : '',
       ].join(' ')}
     >
       {/* Relation endpoints. Sized well above the 8px default and ring-outlined

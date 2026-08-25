@@ -12,6 +12,6 @@
 export { AuthForm } from './auth-form'
 export type { AuthFormProps } from './auth-form'
 export { AuthShell } from './auth-shell'
-export type { AuthShellProps } from './auth-shell'
+export type { AuthShellProps, AuthShellVariant } from './auth-shell'
 export { ForgotPasswordForm } from './forgot-password-form'
 export { ResetPasswordForm } from './reset-password-form'

@@ -29,46 +29,57 @@ import { APP_NAME } from '@/lib/config/branding'
  *
  * WHAT:  Inline style tokens shared by all templates (email clients ignore
  *        external CSS, so styles must be inline).
- * WHY:   Single place to tune typography/colors; swap to brand colors here.
+ * WHY:   Single place to tune typography/colors. Email is the one surface that
+ *        CANNOT read the theme tokens in src/app/globals.css — no CSS custom
+ *        properties, no external stylesheet — so these literal hexes are the
+ *        sanctioned mirror of the green/black palette. Keep them in step with
+ *        globals.css when the brand changes; nothing else in the app hardcodes
+ *        colors.
  * WHERE: Spread into <Text>/<Button> style props in the templates.
  */
 export const emailStyles = {
   body: {
-    backgroundColor: '#f5f5f5',
+    /* ≈ --background (dark) */
+    backgroundColor: '#080b09',
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     margin: 0,
     padding: '40px 0',
   },
   container: {
-    backgroundColor: '#ffffff',
+    /* ≈ --card (dark) with a --border hairline */
+    backgroundColor: '#161b18',
+    border: '1px solid #2a322d',
     borderRadius: '12px',
     margin: '0 auto',
     maxWidth: '520px',
     padding: '40px',
   },
   brand: {
-    color: '#111111',
+    /* ≈ --primary: the wordmark carries the brand green */
+    color: '#4ade8a',
     fontSize: '20px',
     fontWeight: 700,
     margin: '0 0 24px',
   },
   title: {
-    color: '#111111',
+    /* ≈ --foreground */
+    color: '#f2f6f3',
     fontSize: '22px',
     fontWeight: 600,
     margin: '0 0 16px',
   },
   paragraph: {
-    color: '#444444',
+    color: '#c3ccc7',
     fontSize: '15px',
     lineHeight: '24px',
     margin: '0 0 16px',
   },
   ctaButton: {
-    backgroundColor: '#111111',
+    /* ≈ --primary / --primary-foreground */
+    backgroundColor: '#4ade8a',
     borderRadius: '8px',
-    color: '#ffffff',
+    color: '#0c1410',
     display: 'inline-block',
     fontSize: '15px',
     fontWeight: 600,
@@ -76,17 +87,19 @@ export const emailStyles = {
     textDecoration: 'none',
   },
   note: {
-    color: '#888888',
+    /* ≈ --muted-foreground */
+    color: '#94a49a',
     fontSize: '13px',
     lineHeight: '20px',
     margin: '16px 0 0',
   },
   hr: {
-    borderColor: '#eaeaea',
+    /* ≈ --border */
+    borderColor: '#2a322d',
     margin: '28px 0',
   },
   footer: {
-    color: '#999999',
+    color: '#7d8a83',
     fontSize: '12px',
     lineHeight: '18px',
     margin: 0,
@@ -125,7 +138,12 @@ export function BaseLayout({
 }) {
   return (
     <Html>
-      <Head />
+      {/* Declares the design as dark so clients with a dark mode leave the
+          palette alone instead of force-inverting it into unreadable mush. */}
+      <Head>
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+      </Head>
       <Preview>{preview}</Preview>
       <Body style={emailStyles.body}>
         <Container style={emailStyles.container}>

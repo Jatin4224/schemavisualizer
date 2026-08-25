@@ -14,7 +14,7 @@
  */
 
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Archivo, Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { BRANDING } from '@/lib/config'
 import {
@@ -28,10 +28,16 @@ import { SetupChecklist } from '@/components/global/setup-checklist'
 import { Toaster } from '@/components/ui/sonner'
 import { cn } from '@/lib/utils'
 
-/* Geist is the app-wide sans font (matches funnelmods). Its variable
- * (--font-geist-sans) is set on <html>, where globals.css's `html { @apply
- * font-sans }` + `--font-sans: var(--font-geist-sans)` resolve it. Geist Mono
- * backs --font-geist-mono / the `font-mono` utility. */
+/* Geist is the app-wide sans font. Its variable (--font-geist-sans) is set on
+ * <html>, where globals.css's `--font-sans: var(--font-geist-sans)` resolves
+ * it. Geist Mono backs --font-geist-mono / the `font-mono` utility. Archivo is
+ * the editorial display face for major headings — its variable
+ * (--font-archivo) feeds --font-display / --font-heading in globals.css. */
+const archivo = Archivo({
+  variable: '--font-archivo',
+  subsets: ['latin'],
+})
+
 const geistSans = Geist({
   variable: '--font-geist-sans',
   subsets: ['latin'],
@@ -60,7 +66,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn('h-full', geistSans.variable, geistMono.variable)}
+      className={cn('h-full', archivo.variable, geistSans.variable, geistMono.variable)}
     >
       <body className="min-h-full flex flex-col antialiased" suppressHydrationWarning>
         <ThemeProvider

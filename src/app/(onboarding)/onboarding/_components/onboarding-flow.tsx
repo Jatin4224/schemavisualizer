@@ -25,6 +25,7 @@ import { authClient } from '@/lib/better-auth/auth-client'
 import { ROUTES, isPaidPlan, PLANS, type PlanKey, type BillingInterval } from '@/lib/config'
 import { createOrganizationSchema, type CreateOrganizationValues } from '@/lib/types'
 import { PlatformLogo } from '@/components/global/platform-logo'
+import { BrandBackdrop } from '@/components/global/brand-backdrop'
 import {
   StripeElementsProvider,
   PaymentCardForm,
@@ -127,14 +128,31 @@ export function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-svh bg-background p-4 md:p-8">
+    <div className="relative isolate min-h-svh overflow-hidden bg-background p-4 md:p-8">
+      <BrandBackdrop />
       <div className="mx-auto w-full max-w-md space-y-8 pt-8 md:pt-16">
         <div className="flex justify-center">
           <PlatformLogo href="/" />
         </div>
-        <p className="text-center text-sm text-muted-foreground">
-          Step {stepNumber} of {totalSteps}
-        </p>
+        {/* Segmented progress — a filled bar per completed step reads faster
+            than "Step 2 of 3" alone, and both stay in sync from stepNumber. */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-1.5">
+            {Array.from({ length: totalSteps }, (_, index) => (
+              <span
+                key={index}
+                className={
+                  index < stepNumber
+                    ? 'h-1 flex-1 bg-primary transition-colors'
+                    : 'h-1 flex-1 bg-muted transition-colors'
+                }
+              />
+            ))}
+          </div>
+          <p className="text-kicker text-center text-muted-foreground">
+            Step {stepNumber} of {totalSteps}
+          </p>
+        </div>
 
         {step === 'details' ? (
           <div className="space-y-6">
@@ -217,7 +235,9 @@ export function OnboardingFlow() {
 function StepHeading({ title, description }: { title: string; description: string }) {
   return (
     <div className="space-y-2">
-      <h2 className="text-xl font-semibold tracking-tight md:text-2xl">{title}</h2>
+      <h2 className="font-heading text-2xl font-extrabold uppercase leading-none tracking-tight md:text-3xl">
+        {title}
+      </h2>
       <p className="text-sm text-muted-foreground">{description}</p>
     </div>
   )

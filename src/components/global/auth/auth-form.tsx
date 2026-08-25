@@ -227,11 +227,13 @@ function SignUpForm({ callbackURL }: { callbackURL: string }) {
   if (submittedEmail) {
     return (
       <div className="flex flex-col items-center gap-6 text-center">
-        <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
+        <div className="flex size-16 items-center justify-center rounded-md bg-primary/10 ring-1 ring-primary/25">
           <MailCheckIcon className="size-8 text-primary" />
         </div>
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-bold">Check your email</h1>
+          <h1 className="font-heading text-2xl font-extrabold uppercase tracking-tight">
+            Check your email
+          </h1>
           <p className="text-balance text-sm text-muted-foreground">
             We sent a verification link to{' '}
             <span className="font-medium text-foreground">{submittedEmail}</span>. Click it to
@@ -364,7 +366,7 @@ function SocialOnlyForm({
 function AuthHeading({ title, description }: { title: string; description: string }) {
   return (
     <div className="flex flex-col items-center gap-2 text-center">
-      <h1 className="text-2xl font-bold">{title}</h1>
+      <h1 className="font-heading text-2xl font-extrabold uppercase tracking-tight">{title}</h1>
       <p className="text-balance text-sm text-muted-foreground">{description}</p>
     </div>
   )
@@ -436,7 +438,9 @@ function GoogleButton({
     <>
       {showDivider ? (
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-          <span className="relative z-10 bg-background px-2 text-muted-foreground">Or continue with</span>
+          <span className="text-kicker relative z-10 bg-card px-2 text-muted-foreground">
+            Or continue with
+          </span>
         </div>
       ) : null}
       <Button variant="outline" type="button" className="w-full" onClick={onClick} disabled={isBusy}>

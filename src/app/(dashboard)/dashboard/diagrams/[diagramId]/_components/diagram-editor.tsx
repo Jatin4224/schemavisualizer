@@ -718,7 +718,7 @@ function DiagramEditorInner({
             legend={nodes.length > 0 ? <CanvasLegend /> : undefined}
             overlay={nodes.length === 0 ? <CanvasEmptyState /> : undefined}
             toolbar={
-              <div className="flex items-center gap-3 rounded-md border bg-card p-2 shadow-sm">
+              <div className="surface-panel flex items-center gap-3 rounded-lg p-2">
                 <FeatureGate resource="diagramEntities">
                   <Button size="sm" className="gap-1.5" onClick={() => void handleAddEntity()}>
                     <PlusIcon className="h-4 w-4" />

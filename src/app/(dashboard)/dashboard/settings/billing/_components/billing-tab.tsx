@@ -32,6 +32,7 @@ import { trpc } from '@/trpc/react-provider'
 import { useActiveOrganization } from '@/hooks/use-active-organization'
 import { permissions } from '@/lib/better-auth/permissions'
 import { SettingsSection } from '@/components/global/settings-section'
+import { EmptyState } from '@/components/global/empty-state'
 import {
   PaymentMethodRow,
   AddPaymentMethodDialog,
@@ -245,19 +246,20 @@ export function BillingTab() {
           labelDescription="Payment methods for your subscription."
         >
           {methods.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-8 text-center">
-              <CreditCard className="mb-3 h-10 w-10 text-muted-foreground" />
-              <p className="text-sm font-medium">No payment methods on file</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Add a payment method to manage your subscription
-              </p>
-              {canAdd ? (
-                <Button onClick={() => setAddOpen(true)} variant="outline" size="sm" className="mt-4 gap-2">
-                  <Plus className="h-4 w-4" />
-                  Add payment method
-                </Button>
-              ) : null}
-            </div>
+            <EmptyState
+              icon={CreditCard}
+              size="sm"
+              title="No payment methods on file"
+              description="Add a payment method to manage your subscription"
+              action={
+                canAdd ? (
+                  <Button onClick={() => setAddOpen(true)} variant="outline" size="sm" className="gap-2">
+                    <Plus className="h-4 w-4" />
+                    Add payment method
+                  </Button>
+                ) : null
+              }
+            />
           ) : (
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">Always keep a second card on file.</p>

@@ -74,7 +74,7 @@ export function AuditLogsTable() {
                 <p className="truncate text-sm">
                   {log.description ?? `${log.action} ${log.entity}`}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-kicker text-muted-foreground">
                   {log.user?.name ?? 'Someone'} · {new Date(log.createdAt).toLocaleString()}
                 </p>
               </div>

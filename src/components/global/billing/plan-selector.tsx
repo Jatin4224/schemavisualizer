@@ -54,7 +54,7 @@ export function BillingIntervalToggle({
             onClick={() => onIntervalChange(value)}
             className={cn(
               'rounded-lg border-2 border-muted p-3 text-sm font-semibold capitalize transition-all hover:bg-muted/50',
-              selected && 'border-primary'
+              selected && 'border-primary bg-primary/5 text-primary'
             )}
           >
             {value}
@@ -88,11 +88,13 @@ export function PlanSelector({
             type="button"
             onClick={() => onPlanChange(plan)}
             className={cn(
-              'relative flex items-center gap-4 rounded-lg border-2 border-muted p-4 text-left transition-all hover:bg-muted/50',
-              isSelected && 'border-border bg-muted'
+              'relative flex items-center gap-4 rounded-lg border-2 border-border p-4 text-left transition-all hover:border-primary/40 hover:bg-muted/50',
+              /* Selection is carried by the brand green + glow, not just a
+               * slightly different grey — it has to be obvious at a glance. */
+              isSelected && 'border-primary bg-primary/5'
             )}
           >
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-md bg-primary/10 ring-1 ring-primary/25">
               <Icon className="size-5 text-primary" />
             </div>
             <div className="flex-1">

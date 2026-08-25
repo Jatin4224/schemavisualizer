@@ -37,6 +37,8 @@ import { permissions } from '@/lib/better-auth/permissions'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { EmptyState } from '@/components/global/empty-state'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -137,11 +139,7 @@ export function DiagramList({ organizationId }: { organizationId: string }) {
 
   if (rows.length === 0) {
     return (
-      <div className="flex min-h-64 flex-col items-center justify-center gap-3 rounded-lg border border-dashed p-10 text-center">
-        <Table2Icon className="h-8 w-8 text-muted-foreground" />
-        <p className="text-sm font-medium">No diagrams yet</p>
-        <p className="max-w-sm text-xs text-muted-foreground">{EMPTY_STATE_HINT}</p>
-      </div>
+      <EmptyState icon={Table2Icon} title="No diagrams yet" description={EMPTY_STATE_HINT} />
     )
   }
 
@@ -240,6 +238,7 @@ function DiagramCard({
   const router = useRouter()
 
   return (
+    /* Card frames itself with a border, so the hover accent targets it. */
     <Card className="group relative transition-colors hover:border-primary/50">
       <CardHeader className="space-y-3">
         <div className="flex items-start justify-between gap-2">
@@ -296,17 +295,17 @@ function DiagramCard({
         ) : null}
 
         <div className="flex flex-wrap items-center gap-2 pt-1">
-          <Badge variant="secondary" className="gap-1 font-normal">
+          <Badge variant="secondary" className="gap-1">
             <Table2Icon className="h-3 w-3" />
             {row._count.entities} {row._count.entities === 1 ? 'entity' : 'entities'}
           </Badge>
-          <Badge variant="secondary" className="gap-1 font-normal">
+          <Badge variant="secondary" className="gap-1">
             <GitBranchIcon className="h-3 w-3" />
             {row._count.relations} {row._count.relations === 1 ? 'relation' : 'relations'}
           </Badge>
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className="text-kicker text-muted-foreground">
           Edited {new Date(row.updatedAt).toLocaleString()}
           {row.createdBy?.name ? ` · by ${row.createdBy.name}` : ''}
         </p>
@@ -319,11 +318,11 @@ function SkeletonCard() {
   return (
     <Card>
       <CardHeader className="space-y-3">
-        <div className="h-5 w-2/3 rounded bg-muted" />
-        <div className="h-3 w-full rounded bg-muted" />
+        <Skeleton className="h-5 w-2/3" />
+        <Skeleton className="h-3 w-full" />
         <div className="flex gap-2">
-          <div className="h-5 w-20 rounded bg-muted" />
-          <div className="h-5 w-24 rounded bg-muted" />
+          <Skeleton className="h-5 w-20" />
+          <Skeleton className="h-5 w-24" />
         </div>
       </CardHeader>
     </Card>

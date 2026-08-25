@@ -37,10 +37,10 @@ export function SettingsSection({
       <SectionHeader title={title} {...(description ? { description } : {})} />
       <Separator />
       <div className="grid gap-8 md:grid-cols-[280px_1fr] lg:gap-12">
-        <div className="space-y-1">
-          <h4 className="text-sm font-medium">{label}</h4>
+        <div className="space-y-1.5">
+          <h4 className="text-kicker text-muted-foreground">{label}</h4>
           {labelDescription ? (
-            <p className="text-sm text-muted-foreground">{labelDescription}</p>
+            <p className="text-sm text-pretty text-muted-foreground">{labelDescription}</p>
           ) : null}
         </div>
         <div className="max-w-md">{children}</div>

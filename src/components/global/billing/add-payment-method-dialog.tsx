@@ -31,6 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { getCardElementStyle } from '@/lib/config'
 
 export interface AddPaymentMethodDialogProps {
   organizationId: string
@@ -85,9 +86,9 @@ function AddPaymentMethodForm({
   const [cardReady, setCardReady] = React.useState(false)
   const [submitting, setSubmitting] = React.useState(false)
 
-  /* Stripe iframe can't read CSS tokens — literal, theme-derived colors. */
-  const isDark = resolvedTheme !== 'light'
-  const cardTextColor = isDark ? '#ffffff' : '#0f172a'
+  /* Stripe iframe can't read CSS tokens — the literal, theme-derived colors
+   * come from src/lib/config/stripe-elements.ts (the one place that owns them). */
+  const cardElementStyle = getCardElementStyle(resolvedTheme !== 'light', '16px')
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -123,19 +124,9 @@ function AddPaymentMethodForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label>Card details</Label>
-        <div className="rounded-md border p-3">
+        <div className="rounded-lg border bg-input/30 p-3 transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30">
           <CardElement
-            options={{
-              style: {
-                base: {
-                  fontSize: '16px',
-                  color: cardTextColor,
-                  '::placeholder': { color: '#71717a' },
-                },
-                invalid: { color: '#dc2626' },
-              },
-              hidePostalCode: false,
-            }}
+            options={{ style: cardElementStyle, hidePostalCode: false }}
             onChange={(e) => {
               setError(e.error?.message ?? null)
               setCardReady(e.complete)

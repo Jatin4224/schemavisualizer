@@ -5,7 +5,8 @@
  *   AUTH_METHODS_AVAILABLE, PLANS, PlanKey, PlanDefinition, ROUTES,
  *   AppRouteKey, PLAN_ORDER, BillingInterval, getPlanPriceId, getPlanByPriceId,
  *   getNextPlan, isPaidPlan, portalConfig, isPortalEnabled,
- *   isPortalOwnerEmail, PORTAL_PATH
+ *   isPortalOwnerEmail, PORTAL_PATH, STRIPE_ELEMENT_COLORS,
+ *   getCardElementStyle, CardElementStyle
  *
  * WHAT:  Barrel re-export for the CLIENT-SAFE `src/lib/config/*` modules only.
  * WHY:   Single import surface (`@/lib/config`) so consumers don't depend on
@@ -60,6 +61,8 @@ export {
   isDataTypeKey,
 } from './data-types'
 export type { DataTypeKey, DataTypeDefinition } from './data-types'
+export { STRIPE_ELEMENT_COLORS, getCardElementStyle } from './stripe-elements'
+export type { CardElementStyle } from './stripe-elements'
 export {
   ENTITY_COLOR_TOKENS,
   ENTITY_COLOR_TOKEN_KEYS,

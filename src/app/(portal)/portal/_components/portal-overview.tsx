@@ -26,15 +26,17 @@ export function PortalOverview() {
       {stats.map((stat) => (
         <Card key={stat.label}>
           <CardHeader>
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardTitle className="text-kicker font-medium text-muted-foreground">
               {stat.label}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-10 w-20" />
             ) : (
-              <p className="text-3xl font-semibold">{stat.value ?? 0}</p>
+              <p className="font-heading text-5xl font-black tabular-nums leading-none tracking-tight">
+                {stat.value ?? 0}
+              </p>
             )}
           </CardContent>
         </Card>

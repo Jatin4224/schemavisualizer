@@ -35,7 +35,7 @@ export function CanvasEmptyState() {
     /* pointer-events-none so the panel never eats a pan/zoom drag on the
      * canvas underneath it. */
     <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center p-6">
-      <div className="max-w-sm rounded-lg border border-dashed bg-card/80 p-6 text-center shadow-sm backdrop-blur-sm">
+      <div className="surface-panel max-w-sm rounded-lg p-6 text-center">
         <Table2Icon className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
         <p className="text-sm font-medium">Start with your first entity</p>
         <p className="mt-1 text-xs text-muted-foreground">
@@ -109,7 +109,7 @@ const CANVAS_LEGEND_ITEMS: readonly LegendItem[] = [
  */
 export function CanvasLegend() {
   return (
-    <div className="pointer-events-none rounded-md border bg-card/90 px-2.5 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur-sm">
+    <div className="surface-panel pointer-events-none rounded-lg px-2.5 py-2 text-xs text-muted-foreground">
       <ul className="flex flex-wrap items-center gap-x-3 gap-y-1">
         {CANVAS_LEGEND_ITEMS.map((item) => (
           <li key={item.label} className="flex items-center gap-1">

@@ -1,11 +1,13 @@
 /**
  * SOURCE OF TRUTH KEYWORDS: PlatformLogo, PlatformLogoProps
  *
- * WHAT:  The app's wordmark — a small square icon (primary token) + APP_NAME.
- * WHY:   One reusable brand mark for the auth screens (and anywhere else the
- *        logo is needed). Swap the SVG path here to rebrand. Uses theme tokens
- *        only (bg-primary / text-primary-foreground).
- * WHERE: Rendered by src/components/global/auth/auth-shell.tsx.
+ * WHAT:  The app's wordmark — a coral brand tile + APP_NAME in the display
+ *        face.
+ * WHY:   One reusable brand mark for the auth screens, the landing header and
+ *        anywhere else the logo is needed. Swap the SVG path here to rebrand.
+ *        Uses theme tokens only (bg-primary / text-primary-foreground /
+ *        font-heading) so it follows the palette.
+ * WHERE: src/components/global/auth/auth-shell.tsx, src/app/page.tsx.
  */
 
 import Link from 'next/link'
@@ -21,23 +23,27 @@ export interface PlatformLogoProps {
 
 export function PlatformLogo({ href = '/', className, showName = true }: PlatformLogoProps) {
   const content = (
-    <div className={cn('flex items-center gap-2 font-medium', className)}>
-      <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+    <div className={cn('flex items-center gap-2.5', className)}>
+      {/* Coral tile + ink glyph: the print-mark. Flat, squared, no glow. */}
+      <div className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          strokeWidth="2.5"
+          strokeLinecap="square"
           className="size-4"
           aria-hidden="true"
         >
           <path d="m8 3 4 8 5-5 5 15H2L8 3z" />
         </svg>
       </div>
-      {showName ? <span>{APP_NAME}</span> : null}
+      {showName ? (
+        <span className="font-heading text-base font-extrabold uppercase tracking-tight">
+          {APP_NAME}
+        </span>
+      ) : null}
     </div>
   )
 

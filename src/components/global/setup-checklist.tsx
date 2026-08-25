@@ -120,9 +120,11 @@ export function SetupChecklist({
   return (
     <main className="flex min-h-svh items-center justify-center bg-background p-6">
       <div className="w-full max-w-md">
-        <h1 className="mb-6 text-center text-lg font-medium">Finish setup</h1>
+        <h1 className="font-heading mb-6 text-center text-2xl font-extrabold uppercase tracking-tight">
+          Finish setup
+        </h1>
 
-        <div className="space-y-1 rounded-2xl border bg-card p-1.5">
+        <div className="space-y-1 rounded-lg border bg-card p-1.5">
           {items.map((item, index) => {
             const Icon = iconFor(item.icon)
             const isActive = index === activeIndex
@@ -130,7 +132,7 @@ export function SetupChecklist({
               <div
                 key={item.key}
                 className={cn(
-                  'relative flex items-center gap-3.5 rounded-xl px-4 py-3.5 transition-colors',
+                  'relative flex items-center gap-3.5 rounded-lg px-4 py-3.5 transition-colors',
                   isActive && 'bg-accent'
                 )}
               >
@@ -181,11 +183,11 @@ export function SetupChecklist({
               <p className="text-xs font-medium text-muted-foreground">Optional integrations</p>
               <p className="text-xs text-muted-foreground">Not required to run the app</p>
             </div>
-            <div className="space-y-1 rounded-2xl border border-dashed bg-card/50 p-1.5">
+            <div className="space-y-1 rounded-lg border border-dashed bg-card/50 p-1.5">
               {optional.map((item) => {
                 const Icon = iconFor(item.icon)
                 return (
-                  <div key={item.id} className="flex items-start gap-3.5 rounded-xl px-4 py-3.5">
+                  <div key={item.id} className="flex items-start gap-3.5 rounded-lg px-4 py-3.5">
                     <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
                       <Icon className="size-[18px]" strokeWidth={2} />
                     </div>

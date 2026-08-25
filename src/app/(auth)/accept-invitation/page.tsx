@@ -25,7 +25,8 @@ export default async function AcceptInvitationPage({
   const { id } = await searchParams
 
   return (
-    <AuthShell>
+    /* `bare`: both branches below already render their own Card surface. */
+    <AuthShell variant="bare">
       {id ? (
         <AcceptInvitation invitationId={id} />
       ) : (
